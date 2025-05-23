@@ -1,0 +1,11 @@
+{
+  "name": "msps-chatbot",
+  "version": "1.0.0",
+  "description": "MSPS Gluten Free Chatbot",
+  "scripts": {
+    "build": "echo 'No build required'"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
