@@ -1,0 +1,50 @@
+# .github/workflows/crawl-website.yml
+name: Crawl Website and Update Vector Store
+
+on:
+  # Run manually from GitHub Actions tab
+  workflow_dispatch:
+  
+  # Run automatically on schedule (every Sunday at 2 AM)
+  schedule:
+    - cron: '0 2 * * 0'
+  
+  # Run when you push to main branch
+  push:
+    branches: [ main ]
+    paths:
+      - 'crawler.py'
+      - '.github/workflows/crawl-website.yml'
+
+jobs:
+  crawl-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install openai beautifulsoup4 requests
+    
+    - name: Run website crawler
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        VECTOR_STORE_ID: ${{ secrets.VECTOR_STORE_ID }}
+        WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+      run: |
+        python crawler.py
+    
+    - name: Upload crawled content as artifact (optional)
+      uses: actions/upload-artifact@v3
+      with:
+        name: website-content
+        path: website_backup.txt
+        retention-days: 30
